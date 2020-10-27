@@ -5,19 +5,22 @@ import com.zup.mercadolivre.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-@Repository
+import javax.transaction.Transactional;
+
+@Service
 public class ImplementsUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
     @Autowired
-    private UserRepository repository;
+    UserRepository repository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         User user = repository.findByLogin(login);
         if (user == null) {
             throw new UsernameNotFoundException("Usuário não encontrado");
         }
-        return user;
+        return ImplementsUserDetails.build(user);
     }
 }
